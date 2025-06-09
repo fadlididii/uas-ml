@@ -1,6 +1,7 @@
 "# uas-ml" 
 
 ## How to run
+1. Create a virtual environment
 1. Run `pip install -r requirements.txt`
 2. Run `uvicorn app.main:app`
 
