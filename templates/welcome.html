@@ -1,0 +1,47 @@
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/welcome.css">
+{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="welcome-section">
+    <div class="container">
+        <h1 class="welcome-title">Welcome to <span class="brand">HeartLink ❤️</span></h1>
+        <p class="welcome-subtitle">A place where meaningful connections begin.</p>
+
+        <div class="grid-2">
+            <!-- Left: Visual -->
+            <div class="tutorial">
+                    <h2 class="section-title">💡 How It Works</h2>
+                    <ul class="tutorial-steps">
+                        <li><strong>Set Preferences:</strong> Tell us what matters to you in a partner.</li>
+                        <li><strong>Get Smart Matches:</strong> We use AI to recommend ideal partners.</li>
+                        <li><strong>Connect Meaningfully:</strong> Chat, meet, and build genuine relationships.</li>
+                    </ul>
+                    <p class="note">Our algorithm continuously adapts based on your choices and conversations.</p>
+                </div>
+
+            <!-- Right: Content -->
+            <div class="content-column">
+                
+
+                <div class="reasons">
+                    <h2 class="section-title">✨ Why HeartLink?</h2>
+                    <ul class="reasons-list">
+                        <li>🔍 Visual preference-based matching</li>
+                        <li>💬 Chat compatibility with NLP</li>
+                        <li>🛡️ Privacy & security at its core</li>
+                        <li>✔️ Verified user profiles only</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="cta">
+                    <h3 class="cta-title">Ready to meet your person?</h3>
+                    <a href="/preferences" class="btn btn-cta">Start Matching ➜</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

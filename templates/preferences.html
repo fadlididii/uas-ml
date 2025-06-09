@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="preferences-section">
+    <div class="container">
+        <h1 class="preferences-title">🎯 Tell Us What Matters</h1>
+        <p class="preferences-subtitle">Let us know your preferences to find meaningful matches just for you.</p>
+
+        <form class="preferences-form" action="/preferences" method="POST">
+            <!-- Lokasi pasangan -->
+            <div class="form-group">
+                <label for="location_preference">Preferred partner location</label>
+                <select id="location_preference" name="location_preference" required>
+                    <option value="">Select</option>
+                    <option value="nearby">Nearby (same city)</option>
+                    <option value="same_country">Same country</option>
+                    <option value="anywhere">Anywhere is fine</option>
+                </select>
+            </div>
+
+            <!-- Agama -->
+            <div class="form-group">
+                <label for="religion_preference">Religion preference</label>
+                <select id="religion_preference" name="religion_preference" required>
+                    <option value="">Select</option>
+                    <option value="no_preference">No preference</option>
+                    <option value="same">Same as mine</option>
+                    <option value="specific">I'll specify later</option>
+                </select>
+            </div>
+
+            <!-- Rentang usia -->
+            <div class="form-group">
+                <label>Preferred age range</label>
+                <div class="form-row">
+                    <input type="number" name="min_age" placeholder="Min" min="18" max="100" required>
+                    <input type="number" name="max_age" placeholder="Max" min="18" max="100" required>
+                </div>
+            </div>
+
+            <!-- Pendidikan -->
+            <div class="form-group">
+                <label for="education_level">Minimum education level</label>
+                <select id="education_level" name="education_level" required>
+                    <option value="">Select</option>
+                    <option value="highschool">High School</option>
+                    <option value="bachelor">Bachelor's Degree</option>
+                    <option value="master">Master's Degree</option>
+                    <option value="doctorate">Doctorate</option>
+                    <option value="no_preference">No preference</option>
+                </select>
+            </div>
+
+            <!-- Gaya komunikasi -->
+            <div class="form-group">
+                <label for="communication_style">Preferred communication style</label>
+                <select id="communication_style" name="communication_style" required>
+                    <option value="">Select</option>
+                    <option value="casual">Casual & relaxed</option>
+                    <option value="emotional">Expressive & empathetic</option>
+                    <option value="serious">Structured & deep</option>
+                    <option value="funny">Humorous & spontaneous</option>
+                </select>
+            </div>
+
+            <!-- Gaya hidup -->
+            <div class="form-group">
+                <label for="lifestyle">Lifestyle preference</label>
+                <select id="lifestyle" name="lifestyle" required>
+                    <option value="">Select</option>
+                    <option value="active">Active & outdoorsy</option>
+                    <option value="calm">Introverted & calm</option>
+                    <option value="balanced">Balanced</option>
+                </select>
+            </div>
+
+            <!-- Aktivitas dating -->
+            <div class="form-group">
+                <label for="date_activities">Favorite date activities</label>
+                <select id="date_activities" name="date_activities" multiple required>
+                    <option value="dinner">Romantic dinner</option>
+                    <option value="walk">Walking together</option>
+                    <option value="game">Gaming</option>
+                    <option value="movie">Watching movies</option>
+                    <option value="travel">Traveling</option>
+                    <option value="cooking">Cooking</option>
+                    <option value="study">Studying or deep talks</option>
+                </select>
+                <small class="note">Hold Ctrl (Windows) or ⌘ (Mac) to select multiple</small>
+            </div>
+
+            <!-- Nilai hubungan -->
+            <div class="form-group">
+                <label for="relationship_values">What values are important to you?</label>
+                <textarea id="relationship_values" name="relationship_values" rows="3" placeholder="e.g., honesty, faith, ambition..." required></textarea>
+            </div>
+
+            <!-- Dealbreaker -->
+            <div class="form-group">
+                <label for="dealbreakers">Your dealbreakers (non-negotiables)</label>
+                <textarea id="dealbreakers" name="dealbreakers" rows="3" placeholder="e.g., smoking, no goals, lying..."></textarea>
+            </div>
+
+            <!-- Tombol Submit -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.preferences-section {
+    padding: 100px 20px;
+    background: var(--light);
+}
+
+.preferences-title {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.preferences-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 50px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.preferences-form {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    max-width: 800px;
+    margin: auto;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+    background-color: #fff;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.note {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 4px;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.btn-primary {
+    background: var(--gradient);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.05);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-form-wrapper">
+        <h2>Create Your Account</h2>
+        <p>Join HeartLink and find your perfect match</p>
+        
+        <form id="registerForm" class="register-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input 
+                        type="text" 
+                        id="first_name" 
+                        name="first_name" 
+                        required
+                        placeholder="Enter your first name"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input 
+                        type="text" 
+                        id="last_name" 
+                        name="last_name" 
+                        required
+                        placeholder="Enter your last name"
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required
+                    placeholder="Enter your email"
+                >
+            </div>
+
+            <div class="form-group position-relative">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required
+                    placeholder="Create a strong password"
+                >
+                <span class="password-toggle password-toggle-register">👁️</span>
+            </div>
+
+            <div class="form-group position-relative">
+                <label for="confirm_password">Confirm Password</label>
+                <input 
+                    type="password" 
+                    id="confirm_password" 
+                    name="confirm_password" 
+                    required
+                    placeholder="Repeat your password"
+                >
+                <span class="password-toggle password-toggle-confirm">👁️</span>
+            </div>
+
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth</label>
+                <input 
+                    type="date" 
+                    id="date_of_birth" 
+                    name="date_of_birth" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Account</button>
+            
+            <p class="login-link">
+                Already have an account? 
+                <a href="#" id="showLoginModal" class="text-primary">Login here</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/main.js"></script>
+{% endblock %}
