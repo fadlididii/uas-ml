@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const getStartedBtns = document.querySelectorAll('.btn-primary');
+    // DOM Elements
+    const heroCreateAccountBtn = document.getElementById('heroCreateAccountBtn');
+    const ctaGetStartedBtn = document.getElementById('ctaGetStartedBtn');
+    const navGetStartedBtn = document.getElementById('navGetStartedBtn');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
     const loginModal = document.getElementById('loginModal');
     const closeModalBtn = document.getElementById('closeModal');
     const passwordToggle = document.querySelector('.password-toggle');
@@ -70,12 +74,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setLoading(form, isLoading) {
         const submitBtn = form.querySelector('button[type="submit"]');
+        const inputs = form.querySelectorAll('input, select');
+        
         if (isLoading) {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Loading...';
+            form.classList.add('loading');
         } else {
             submitBtn.disabled = false;
             submitBtn.textContent = submitBtn.dataset.originalText || (form.id === 'registerForm' ? 'Create Account' : 'Login');
+            form.classList.remove('loading');
+            
+            // Ensure all inputs are enabled and interactive
+            inputs.forEach(input => {
+                input.disabled = false;
+                input.style.pointerEvents = 'auto';
+                input.style.backgroundColor = input.tagName === 'SELECT' ? 'white' : 'white';
+            });
         }
     }
 
@@ -162,12 +177,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Validate required fields
+            const requiredFields = ['email', 'first_name', 'last_name', 'date_of_birth', 'gender'];
+            for (const field of requiredFields) {
+                if (!formData.get(field) || formData.get(field).trim() === '') {
+                    showMessage(`Please fill in the ${field.replace('_', ' ')} field`, 'error');
+                    return;
+                }
+            }
+            
+            // Validate password length
+            if (password.length < 8) {
+                showMessage('Password must be at least 8 characters long', 'error');
+                return;
+            }
+            
+            // Convert date to ISO datetime format
+            const dateOfBirth = formData.get('date_of_birth');
+            const dateTime = new Date(dateOfBirth + 'T00:00:00.000Z').toISOString();
+            
             const registerData = {
                 email: formData.get('email'),
                 password: password,
                 first_name: formData.get('first_name'),
                 last_name: formData.get('last_name'),
-                date_of_birth: formData.get('date_of_birth'),
+                date_of_birth: dateTime,
                 gender: formData.get('gender')
             };
 
@@ -196,7 +230,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.href = '/welcome';
                     }, 1500);
                 } else {
-                    showMessage(result.detail || 'Registration failed. Please try again.', 'error');
+                    // Handle validation errors from backend
+                    if (response.status === 422 && result.detail) {
+                        if (Array.isArray(result.detail)) {
+                            // Handle Pydantic validation errors
+                            const errorMessages = result.detail.map(err => {
+                                const field = err.loc ? err.loc[err.loc.length - 1] : 'field';
+                                return `${field}: ${err.msg}`;
+                            }).join(', ');
+                            showMessage(`Validation error: ${errorMessages}`, 'error');
+                        } else {
+                            showMessage(result.detail, 'error');
+                        }
+                    } else {
+                        showMessage(result.detail || 'Registration failed. Please try again.', 'error');
+                    }
                 }
             } catch (error) {
                 console.error('Registration error:', error);
@@ -207,15 +255,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Event listeners untuk tombol "Get Started"
-    getStartedBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Pastikan hanya tombol yang tidak ada di form register yang membuka modal
-            if (!btn.closest('#registerForm')) {
-                openLoginModal(e);
-            }
+    // Ensure form fields are interactive on page load
+    if (registerForm) {
+        const inputs = registerForm.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.disabled = false;
+            input.style.pointerEvents = 'auto';
+            input.style.backgroundColor = 'white';
+            input.style.cursor = input.tagName === 'SELECT' ? 'pointer' : 'text';
+            
+            // Add debug event listeners
+            input.addEventListener('click', function(e) {
+                console.log('Input clicked:', this.id || this.name, this);
+            });
+            
+            input.addEventListener('focus', function(e) {
+                console.log('Input focused:', this.id || this.name);
+                this.style.backgroundColor = 'white';
+            });
         });
-    });
+    }
+
+    // Event listeners untuk tombol yang membuka login modal
+    if (heroCreateAccountBtn) {
+        heroCreateAccountBtn.addEventListener('click', openLoginModal);
+    }
+    
+    if (ctaGetStartedBtn) {
+        ctaGetStartedBtn.addEventListener('click', openLoginModal);
+    }
+    
+    if (navGetStartedBtn) {
+        navGetStartedBtn.addEventListener('click', openLoginModal);
+    }
+    
+    // Login submit button tetap sebagai form submit (tidak perlu event listener tambahan)
 
     // Tombol close modal
     if (closeModalBtn) {

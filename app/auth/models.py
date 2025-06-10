@@ -2,10 +2,21 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from datetime import datetime
 from uuid import UUID, uuid4
+from enum import Enum
+
+
+class GenderEnum(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"
 
 
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
+    first_name: str
+    last_name: str
+    date_of_birth: datetime
+    gender: GenderEnum
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
