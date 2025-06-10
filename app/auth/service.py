@@ -62,7 +62,11 @@ class AuthService:
         hashed_password = self.get_password_hash(user_data.password)
         user = User(
             email=user_data.email,
-            hashed_password=hashed_password
+            hashed_password=hashed_password,
+            first_name=user_data.first_name,
+            last_name=user_data.last_name,
+            date_of_birth=user_data.date_of_birth,
+            gender=user_data.gender
         )
         
         session.add(user)

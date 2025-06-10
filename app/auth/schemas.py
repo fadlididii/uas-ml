@@ -2,11 +2,22 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
+from enum import Enum
+
+
+class GenderEnum(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"
 
 
 class UserRegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=100)
+    first_name: str
+    last_name: str
+    date_of_birth: datetime
+    gender: GenderEnum
 
 
 class UserLoginRequest(BaseModel):
@@ -17,6 +28,10 @@ class UserLoginRequest(BaseModel):
 class UserResponse(BaseModel):
     id: UUID
     email: str
+    first_name: str
+    last_name: str
+    date_of_birth: datetime
+    gender: GenderEnum
     is_active: bool
     is_superuser: bool
     created_at: datetime

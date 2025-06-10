@@ -27,7 +27,7 @@
                 <a href="#">About</a>
                 <a href="#">Features</a>
                 <a href="#">Success Stories</a>
-                <a href="/" class="btn btn-primary">Get Started</a>
+                <a href="/" id="navGetStartedBtn" class="btn btn-primary">Get Started</a>
             </div>
         </div>
     </nav>
@@ -36,46 +36,6 @@
     <main>
         {% block content %}{% endblock %}
     </main>
-
-    <!-- Modal Login -->
-    <div id="loginModal" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2>Welcome Back</h2>
-                <button id="closeModal" class="modal-close">&times;</button>
-            </div>
-            <form class="login-form" action="/auth/login" method="POST">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email"
-                        placeholder="Enter your email" 
-                        required
-                    >
-                </div>
-                <div class="form-group password-group">
-                    <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        placeholder="Enter your password" 
-                        required
-                    >
-                    <span class="password-toggle">👁️</span>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <p class="register-link">
-                        Don't have an account? 
-                        <a href="/register" class="text-primary">Register here</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="footer">
