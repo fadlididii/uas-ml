@@ -52,16 +52,17 @@ app.include_router(posts_router, prefix="/posts", tags=["Posts"])
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-
 @app.get("/register")
 async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
+@app.get("/about")
+async def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
 
 @app.get("/welcome")
 async def welcome_page(request: Request):
     return templates.TemplateResponse("welcome.html", {"request": request})
-
 
 @app.get("/preferences")
 async def preferences_page(request: Request):

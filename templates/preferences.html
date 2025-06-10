@@ -1,214 +1,1158 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartLink - Preferences Setup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #45B7D1;
+            --dark: #2C363F;
+            --light: #F7F7F7;
+            --white: #FFFFFF;
+            --gradient: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            --gradient-alt: linear-gradient(45deg, #FF6B6B, #45B7D1, #4ECDC4);
+            --shadow: 0 20px 40px rgba(255, 107, 107, 0.15);
+            --shadow-hover: 0 30px 60px rgba(255, 107, 107, 0.25);
+        }
 
-{% block content %}
-<section class="preferences-section">
-    <div class="container">
-        <h1 class="preferences-title">🎯 Tell Us What Matters</h1>
-        <p class="preferences-subtitle">Let us know your preferences to find meaningful matches just for you.</p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-        <form class="preferences-form" action="/preferences" method="POST">
-            <!-- Lokasi pasangan -->
-            <div class="form-group">
-                <label for="location_preference">Preferred partner location</label>
-                <select id="location_preference" name="location_preference" required>
-                    <option value="">Select</option>
-                    <option value="nearby">Nearby (same city)</option>
-                    <option value="same_country">Same country</option>
-                    <option value="anywhere">Anywhere is fine</option>
-                </select>
-            </div>
+        body {
+            background: linear-gradient(135deg, #FF6B6B 0%, #ffffff 50%, #45B7D1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-            <!-- Agama -->
-            <div class="form-group">
-                <label for="religion_preference">Religion preference</label>
-                <select id="religion_preference" name="religion_preference" required>
-                    <option value="">Select</option>
-                    <option value="no_preference">No preference</option>
-                    <option value="same">Same as mine</option>
-                    <option value="specific">I'll specify later</option>
-                </select>
-            </div>
+        /* Animated Background Elements */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
 
-            <!-- Rentang usia -->
-            <div class="form-group">
-                <label>Preferred age range</label>
-                <div class="form-row">
-                    <input type="number" name="min_age" placeholder="Min" min="18" max="100" required>
-                    <input type="number" name="max_age" placeholder="Max" min="18" max="100" required>
-                </div>
-            </div>
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: float 6s ease-in-out infinite;
+        }
 
-            <!-- Pendidikan -->
-            <div class="form-group">
-                <label for="education_level">Minimum education level</label>
-                <select id="education_level" name="education_level" required>
-                    <option value="">Select</option>
-                    <option value="highschool">High School</option>
-                    <option value="bachelor">Bachelor's Degree</option>
-                    <option value="master">Master's Degree</option>
-                    <option value="doctorate">Doctorate</option>
-                    <option value="no_preference">No preference</option>
-                </select>
-            </div>
+        .shape:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
 
-            <!-- Gaya komunikasi -->
-            <div class="form-group">
-                <label for="communication_style">Preferred communication style</label>
-                <select id="communication_style" name="communication_style" required>
-                    <option value="">Select</option>
-                    <option value="casual">Casual & relaxed</option>
-                    <option value="emotional">Expressive & empathetic</option>
-                    <option value="serious">Structured & deep</option>
-                    <option value="funny">Humorous & spontaneous</option>
-                </select>
-            </div>
+        .shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
 
-            <!-- Gaya hidup -->
-            <div class="form-group">
-                <label for="lifestyle">Lifestyle preference</label>
-                <select id="lifestyle" name="lifestyle" required>
-                    <option value="">Select</option>
-                    <option value="active">Active & outdoorsy</option>
-                    <option value="calm">Introverted & calm</option>
-                    <option value="balanced">Balanced</option>
-                </select>
-            </div>
+        .shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 4s;
+        }
 
-            <!-- Aktivitas dating -->
-            <div class="form-group">
-                <label for="date_activities">Favorite date activities</label>
-                <select id="date_activities" name="date_activities" multiple required>
-                    <option value="dinner">Romantic dinner</option>
-                    <option value="walk">Walking together</option>
-                    <option value="game">Gaming</option>
-                    <option value="movie">Watching movies</option>
-                    <option value="travel">Traveling</option>
-                    <option value="cooking">Cooking</option>
-                    <option value="study">Studying or deep talks</option>
-                </select>
-                <small class="note">Hold Ctrl (Windows) or ⌘ (Mac) to select multiple</small>
-            </div>
+        .shape:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            bottom: 10%;
+            right: 20%;
+            animation-delay: 1s;
+        }
 
-            <!-- Nilai hubungan -->
-            <div class="form-group">
-                <label for="relationship_values">What values are important to you?</label>
-                <textarea id="relationship_values" name="relationship_values" rows="3" placeholder="e.g., honesty, faith, ambition..." required></textarea>
-            </div>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+        }
 
-            <!-- Dealbreaker -->
-            <div class="form-group">
-                <label for="dealbreakers">Your dealbreakers (non-negotiables)</label>
-                <textarea id="dealbreakers" name="dealbreakers" rows="3" placeholder="e.g., smoking, no goals, lying..."></textarea>
-            </div>
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 10;
+            padding: 1rem 0;
+            text-align: center;
+        }
 
-            <!-- Tombol Submit -->
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Save Preferences</button>
-            </div>
-        </form>
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Progress Flow */
+        .progress-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .step-circle.active {
+            background: var(--gradient);
+            color: var(--white);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            transform: scale(1.1);
+        }
+
+        .step-circle.completed {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .step-circle.inactive {
+            background: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            color: var(--white);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: -1;
+        }
+
+        .step-connector.completed {
+            background: var(--secondary);
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+            min-height: calc(100vh - 200px);
+        }
+
+        .preferences-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preferences-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                rgba(255, 107, 107, 0.1),
+                transparent,
+                rgba(78, 205, 196, 0.1),
+                transparent
+            );
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .question-counter {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Question Sections */
+        .question-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .question-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-group {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .question-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .question-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Form Controls */
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .radio-item, .checkbox-item {
+            position: relative;
+        }
+
+        .radio-item input, .checkbox-item input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-item label, .checkbox-item label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .radio-item input:checked + label, .checkbox-item input:checked + label {
+            background: var(--gradient);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .radio-item label:hover, .checkbox-item label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .range-input input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-input input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--gradient);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .hobbies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .hobby-item {
+            position: relative;
+        }
+
+        .hobby-item input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .hobby-item label {
+            display: block;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .hobby-item input:checked + label {
+            background: var(--gradient);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Navigation Buttons */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-button.primary {
+            background: var(--gradient);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-button.secondary {
+            background: rgba(255, 255, 255, 0.7);
+            color: var(--dark);
+            border: 2px solid transparent;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .progress-flow {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .flow-step {
+                flex: none;
+                width: 120px;
+            }
+
+            .step-connector {
+                display: none;
+            }
+
+            .preferences-card {
+                padding: 30px 20px;
+                margin: 1rem;
+            }
+
+            .card-title {
+                font-size: 2rem;
+            }
+
+            .radio-group, .checkbox-group {
+                flex-direction: column;
+            }
+
+            .hobbies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
     </div>
-</section>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-.preferences-section {
-    padding: 100px 20px;
-    background: var(--light);
-}
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">HeartLink</div>
+    </header>
 
-.preferences-title {
-    text-align: center;
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 10px;
-}
+    <!-- Progress Flow -->
+    <div class="progress-flow">
+        <div class="flow-step">
+            <div class="step-circle active">1</div>
+            <div class="step-text">Preferences<br>(Q 1-13)</div>
+            <div class="step-connector"></div>
+        </div>
+        <div class="flow-step">
+            <div class="step-circle inactive">2</div>
+            <div class="step-text">Text Preferences<br>(Q 14-22)</div>
+            <div class="step-connector"></div>
+        </div>
+        <div class="flow-step">
+            <div class="step-circle inactive">3</div>
+            <div class="step-text">Visual Test</div>
+            <div class="step-connector"></div>
+        </div>
+        <div class="flow-step">
+            <div class="step-circle inactive">4</div>
+            <div class="step-text">Match</div>
+        </div>
+    </div>
 
-.preferences-subtitle {
-    text-align: center;
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 50px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="preferences-card">
+            <div class="card-header">
+                <h1 class="card-title">Tell Us About Yourself</h1>
+                <p class="card-subtitle">Help us find your perfect match</p>
+                <span class="question-counter" id="questionCounter">Question 1 of 13</span>
+            </div>
 
-.preferences-form {
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    max-width: 800px;
-    margin: auto;
-}
+            <form id="preferencesForm">
+                <!-- Question 1: Gender -->
+                <div class="question-section active" data-question="1">
+                    <div class="question-group">
+                        <h3 class="question-title">🚻 Jenis Kelamin</h3>
+                        <div class="question-item">
+                            <label class="question-label">Pilih jenis kelamin anda:</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="male" name="gender" value="male">
+                                    <label for="male">Laki-Laki</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="female" name="gender" value="female">
+                                    <label for="female">Perempuan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.form-group {
-    margin-bottom: 25px;
-}
+                <!-- Question 2: Age -->
+                <div class="question-section" data-question="2">
+                    <div class="question-group">
+                        <h3 class="question-title">🎂 Usia</h3>
+                        <div class="question-item">
+                            <label class="question-label">Berapa usia anda?</label>
+                            <input type="number" class="text-input" name="age" min="18" max="99" placeholder="Masukkan usia anda">
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Berapa rentang usia ideal pasangan anda? (Min. 21)</label>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="number" class="text-input" name="age_min" min="21" max="99" placeholder="Min" style="width: 100px;">
+                                <span>hingga</span>
+                                <input type="number" class="text-input" name="age_max" min="21" max="99" placeholder="Max" style="width: 100px;">
+                                <span>tahun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.form-group label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 8px;
-    color: var(--dark);
-}
+                <!-- Question 3: Location -->
+                <div class="question-section" data-question="3">
+                    <div class="question-group">
+                        <h3 class="question-title">📍 Domisili</h3>
+                        <div class="question-item">
+                            <label class="question-label">Di mana tempat anda tinggal saat ini?</label>
+                            <input type="text" class="text-input" name="location" placeholder="Contoh: Jakarta, Surabaya, Bandung">
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Apakah anda hanya ingin mencari pasangan yang berdomisili sama?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="same_location_yes" name="same_location" value="yes">
+                                    <label for="same_location_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="same_location_no" name="same_location" value="no">
+                                    <label for="same_location_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease;
-}
+                <!-- Question 4: Physical -->
+                <div class="question-section" data-question="4">
+                    <div class="question-group">
+                        <h3 class="question-title">📏 Berat dan Tinggi</h3>
+                        <div class="question-item">
+                            <label class="question-label">Berapa berat badan anda? (dalam kg)</label>
+                            <input type="number" class="text-input" name="weight" min="30" max="200" placeholder="Contoh: 65">
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Berapa tinggi badan anda? (dalam cm)</label>
+                            <input type="number" class="text-input" name="height" min="120" max="220" placeholder="Contoh: 170">
+                        </div>
+                    </div>
+                </div>
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: var(--primary);
-    background-color: #fff;
-    outline: none;
-}
+                <!-- Question 5: Relationship Goal -->
+                <div class="question-section" data-question="5">
+                    <div class="question-group">
+                        <h3 class="question-title">💕 Tujuan</h3>
+                        <div class="question-item">
+                            <label class="question-label">Apa tujuan hubungan anda saat ini?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="casual" name="relationship_goal" value="casual">
+                                    <label for="casual">Kasual</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="serious" name="relationship_goal" value="serious">
+                                    <label for="serious">Serius</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-textarea {
-    resize: vertical;
-}
+                <!-- Question 6: Lifestyle -->
+                <div class="question-section" data-question="6">
+                    <div class="question-group">
+                        <h3 class="question-title">🏃‍♂ Gaya Hidup dan Kebiasaan</h3>
+                        <div class="question-item">
+                            <label class="question-label">Apa anda mempunyai kebiasaan merokok?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="smoking_yes" name="smoking" value="yes">
+                                    <label for="smoking_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="smoking_no" name="smoking" value="no">
+                                    <label for="smoking_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Apa anda mempunyai kebiasaan meminum alkohol?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="drinking_yes" name="drinking" value="yes">
+                                    <label for="drinking_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="drinking_no" name="drinking" value="no">
+                                    <label for="drinking_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Seberapa rutin anda berolahraga dalam seminggu?</label>
+                            <div class="range-input">
+                                <input type="range" name="exercise" min="1" max="5" value="3" id="exerciseRange">
+                                <div class="range-labels">
+                                    <span>Tidak Pernah</span>
+                                    <span>Jarang</span>
+                                    <span>Kadang-kadang</span>
+                                    <span>Sering</span>
+                                    <span>Sangat Sering</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.form-row {
-    display: flex;
-    gap: 12px;
-}
+                <!-- Question 7: Religion -->
+                <div class="question-section" data-question="7">
+                    <div class="question-group">
+                        <h3 class="question-title">🕌 Agama</h3>
+                        <div class="question-item">
+                            <label class="question-label">Pilih agama yang sesuai dengan kepercayaan anda:</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="islam" name="religion" value="islam">
+                                    <label for="islam">Islam</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="protestan" name="religion" value="protestan">
+                                    <label for="protestan">Protestan</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="katolik" name="religion" value="katolik">
+                                    <label for="katolik">Katolik</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="buddha" name="religion" value="buddha">
+                                    <label for="buddha">Buddha</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="hindu" name="religion" value="hindu">
+                                    <label for="hindu">Hindu</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="konghucu" name="religion" value="konghucu">
+                                    <label for="konghucu">Konghucu</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Apakah anda hanya ingin mencari pasangan yang seiman?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="same_religion_yes" name="same_religion" value="yes">
+                                    <label for="same_religion_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="same_religion_no" name="same_religion" value="no">
+                                    <label for="same_religion_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.note {
-    font-size: 0.85rem;
-    color: #999;
-    margin-top: 4px;
-}
+                <!-- Question 8: Social Care -->
+                <div class="question-section" data-question="8">
+                    <div class="question-group">
+                        <h3 class="question-title">🤝 Kepedulian Sosial</h3>
+                        <div class="question-item">
+                            <label class="question-label">Seberapa peduli anda dengan isu sosial di sekitar anda?</label>
+                            <div class="range-input">
+                                <input type="range" name="social_care" min="1" max="5" value="3" id="socialCareRange">
+                                <div class="range-labels">
+                                    <span>Tidak Peduli</span>
+                                    <span>Kurang Peduli</span>
+                                    <span>Cukup Peduli</span>
+                                    <span>Peduli</span>
+                                    <span>Sangat Peduli</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Apakah anda merasa lebih nyaman dengan pasangan yang peduli dengan isu sosial?</label>
+                            <div class="range-input">
+                                <input type="range" name="partner_social_care" min="1" max="5" value="3" id="partnerSocialCareRange">
+                                <div class="range-labels">
+                                    <span>Tidak Penting</span>
+                                    <span>Kurang Penting</span>
+                                    <span>Cukup Penting</span>
+                                    <span>Penting</span>
+                                    <span>Sangat Penting</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.form-actions {
-    text-align: center;
-    margin-top: 40px;
-}
+                <!-- Question 9: Education -->
+                <div class="question-section" data-question="9">
+                    <div class="question-group">
+                        <h3 class="question-title">🎓 Tingkat Pendidikan</h3>
+                        <div class="question-item">
+                            <label class="question-label">Apa tingkat pendidikan terakhir anda?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="smp" name="education" value="smp">
+                                    <label for="smp">SMP/Sederajat</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="sma" name="education" value="sma">
+                                    <label for="sma">SMA/Sederajat</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="sarjana" name="education" value="sarjana">
+                                    <label for="sarjana">Sarjana/Diploma</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="magister" name="education" value="magister">
+                                    <label for="magister">Magister</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="doktoral" name="education" value="doktoral">
+                                    <label for="doktoral">Doktoral</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Pilih preferensi minimum pendidikan pasangan anda:</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="partner_smp" name="partner_education" value="smp">
+                                    <label for="partner_smp">SMP/Sederajat</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="partner_sma" name="partner_education" value="sma">
+                                    <label for="partner_sma">SMA/Sederajat</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="partner_sarjana" name="partner_education" value="sarjana">
+                                    <label for="partner_sarjana">Sarjana/Diploma</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="partner_magister" name="partner_education" value="magister">
+                                    <label for="partner_magister">Magister</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="partner_doktoral" name="partner_education" value="doktoral">
+                                    <label for="partner_doktoral">Doktoral</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="no_preference" name="partner_education" value="no_preference">
+                                    <label for="no_preference">Tidak memiliki preferensi</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.btn-primary {
-    background: var(--gradient);
-    color: white;
-    padding: 12px 30px;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
+                <!-- Question 10: Hobbies -->
+                <div class="question-section" data-question="10">
+                    <div class="question-group">
+                        <h3 class="question-title">🎨 Minat/Hobi</h3>
+                        <div class="question-item">
+                            <label class="question-label">Pilih hobi yang sesuai dengan minat anda: (Pilih maksimal 5)</label>
+                            <div class="hobbies-grid">
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="reading" name="hobbies" value="reading">
+                                    <label for="reading">📚 Membaca</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="sports" name="hobbies" value="sports">
+                                    <label for="sports">⚽ Olahraga</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="music" name="hobbies" value="music">
+                                    <label for="music">🎵 Musik</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="cooking" name="hobbies" value="cooking">
+                                    <label for="cooking">🍳 Memasak</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="traveling" name="hobbies" value="traveling">
+                                    <label for="traveling">✈ Traveling</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="gaming" name="hobbies" value="gaming">
+                                    <label for="gaming">🎮 Gaming</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="photography" name="hobbies" value="photography">
+                                    <label for="photography">📸 Fotografi</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="movies" name="hobbies" value="movies">
+                                    <label for="movies">🎬 Film/Drama</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="art" name="hobbies" value="art">
+                                    <label for="art">🎨 Seni</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="gardening" name="hobbies" value="gardening">
+                                    <label for="gardening">🌱 Berkebun</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="dancing" name="hobbies" value="dancing">
+                                    <label for="dancing">💃 Menari</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="writing" name="hobbies" value="writing">
+                                    <label for="writing">✍ Menulis</label>
+                                </div>
+                                <div class="hobby-item">
+                                    <input type="checkbox" id="others" name="hobbies" value="others">
+                                    <label for="others">🔄 Lain-lain</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-.btn-primary:hover {
-    filter: brightness(1.05);
-}
-</style>
-{% endblock %}
+                <!-- Question 11: Love Language -->
+                <div class="question-section" data-question="11">
+                    <div class="question-group">
+                        <h3 class="question-title">💝 Love Language</h3>
+                        <div class="question-item">
+                            <label class="question-label">Pilih bahasa cinta yang anda senang berikan kepada pasangan: (Bisa pilih lebih dari satu)</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="give_words" name="give_love_language" value="words_of_affirmation">
+                                    <label for="give_words">Words of Affirmation</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="give_quality" name="give_love_language" value="quality_time">
+                                    <label for="give_quality">Quality Time</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="give_acts" name="give_love_language" value="acts_of_service">
+                                    <label for="give_acts">Acts of Service</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="give_gifts" name="give_love_language" value="receiving_gifts">
+                                    <label for="give_gifts">Receiving Gifts</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="give_touch" name="give_love_language" value="physical_touch">
+                                    <label for="give_touch">Physical Touch</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Pilih bahasa cinta yang anda senang terima dari pasangan: (Bisa pilih lebih dari satu)</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="receive_words" name="receive_love_language" value="words_of_affirmation">
+                                    <label for="receive_words">Words of Affirmation</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="receive_quality" name="receive_love_language" value="quality_time">
+                                    <label for="receive_quality">Quality Time</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="receive_acts" name="receive_love_language" value="acts_of_service">
+                                    <label for="receive_acts">Acts of Service</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="receive_gifts" name="receive_love_language" value="receiving_gifts">
+                                    <label for="receive_gifts">Receiving Gifts</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="receive_touch" name="receive_love_language" value="physical_touch">
+                                    <label for="receive_touch">Physical Touch</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 12: Pets -->
+                <div class="question-section" data-question="12">
+                    <div class="question-group">
+                        <h3 class="question-title">🐕 Peliharaan</h3>
+                        <div class="question-item">
+                            <label class="question-label">Apa anda mempunyai hewan peliharaan?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="have_pets_yes" name="have_pets" value="yes">
+                                    <label for="have_pets_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="have_pets_no" name="have_pets" value="no">
+                                    <label for="have_pets_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <label class="question-label">Apa anda nyaman dengan pasangan yang memiliki hewan peliharaan?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="comfortable_pets_yes" name="comfortable_pets" value="yes">
+                                    <label for="comfortable_pets_yes">Ya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="comfortable_pets_no" name="comfortable_pets" value="no">
+                                    <label for="comfortable_pets_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 13: Outdoor Activities -->
+                <div class="question-section" data-question="13">
+                    <div class="question-group">
+                        <h3 class="question-title">🌳 Aktivitas Outdoor</h3>
+                        <div class="question-item">
+                            <label class="question-label">Seberapa rutin anda beraktivitas di luar rumah di luar kebutuhan pekerjaan?</label>
+                            <div class="range-input">
+                                <input type="range" name="outdoor_activity" min="1" max="5" value="3" id="outdoorRange">
+                                <div class="range-labels">
+                                    <span>Tidak Pernah</span>
+                                    <span>Jarang</span>
+                                    <span>Kadang-kadang</span>
+                                    <span>Sering</span>
+                                    <span>Sangat Sering</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Navigation -->
+            <div class="navigation">
+                <button type="button" class="nav-button secondary" id="prevBtn" onclick="previousQuestion()" disabled>Sebelumnya</button>
+                <button type="button" class="nav-button primary" id="nextBtn" onclick="nextQuestion()">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 13;
+
+        function updateQuestionCounter() {
+            const counter = document.getElementById('questionCounter');
+            counter.textContent = Question ${currentQuestion} of ${totalQuestions};
+        }
+
+        function showQuestion(questionNumber) {
+            // Hide all questions
+            const questions = document.querySelectorAll('.question-section');
+            questions.forEach(q => q.classList.remove('active'));
+            
+            // Show current question
+            const currentQ = document.querySelector([data-question="${questionNumber}"]);
+            if (currentQ) {
+                currentQ.classList.add('active');
+            }
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = questionNumber === 1;
+            
+            if (questionNumber === totalQuestions) {
+                nextBtn.textContent = 'Lanjut ke Text Preferences';
+                nextBtn.onclick = goToTextPreferences;
+            } else {
+                nextBtn.textContent = 'Selanjutnya';
+                nextBtn.onclick = nextQuestion;
+            }
+            
+            updateQuestionCounter();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function goToTextPreferences() {
+            // Here you would navigate to text preferences page
+            alert('Menuju ke halaman Text Preferences...');
+            // window.location.href = 'text-preferences.html';
+        }
+
+        // Hobby selection limit
+        function limitHobbies() {
+            const checkboxes = document.querySelectorAll('input[name="hobbies"]');
+            const checkedBoxes = document.querySelectorAll('input[name="hobbies"]:checked');
+            
+            if (checkedBoxes.length >= 5) {
+                checkboxes.forEach(cb => {
+                    if (!cb.checked) {
+                        cb.disabled = true;
+                        cb.parentElement.style.opacity = '0.5';
+                    }
+                });
+            } else {
+                checkboxes.forEach(cb => {
+                    cb.disabled = false;
+                    cb.parentElement.style.opacity = '1';
+                });
+            }
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            showQuestion(1);
+            
+            // Add hobby limit functionality
+            const hobbyCheckboxes = document.querySelectorAll('input[name="hobbies"]');
+            hobbyCheckboxes.forEach(cb => {
+                cb.addEventListener('change', limitHobbies);
+            });
+            
+            // Range input visual feedback
+            const ranges = document.querySelectorAll('input[type="range"]');
+            ranges.forEach(range => {
+                range.addEventListener('input', function() {
+                    const value = (this.value - this.min) / (this.max - this.min) * 100;
+                    this.style.background = linear-gradient(to right, #FF6B6B 0%, #4ECDC4 ${value}%, rgba(255,255,255,0.3) ${value}%, rgba(255,255,255,0.3) 100%);
+                });
+                
+                // Initialize
+                const value = (range.value - range.min) / (range.max - range.min) * 100;
+                range.style.background = linear-gradient(to right, #FF6B6B 0%, #4ECDC4 ${value}%, rgba(255,255,255,0.3) ${value}%, rgba(255,255,255,0.3) 100%);
+            });
+        });
+
+        // Smooth scroll to top when changing questions
+        function smoothScrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Override navigation functions to include smooth scroll
+        const originalNext = nextQuestion;
+        const originalPrev = previousQuestion;
+
+        nextQuestion = function() {
+            originalNext();
+            smoothScrollToTop();
+        }
+
+        previousQuestion = function() {
+            originalPrev();
+            smoothScrollToTop();
+        }
+    </script>
+</body>
+</html>
