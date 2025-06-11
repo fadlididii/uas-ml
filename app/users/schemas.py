@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
+from pydantic import BaseModel, EmailStr, Field, validator
 
 
 class UserListResponse(BaseModel):
@@ -39,18 +40,11 @@ class UserProfileRequest(BaseModel):
     phone: Optional[str] = Field(None, max_length=20)
     date_of_birth: Optional[datetime] = None
     location: Optional[str] = Field(None, max_length=100)
-    website: Optional[str] = None
 
     @validator('phone')
     def validate_phone(cls, v):
         if v and not v.replace('+', '').replace('-', '').replace(' ', '').isdigit():
             raise ValueError('Invalid phone number format')
-        return v
-
-    @validator('website')
-    def validate_website(cls, v):
-        if v and not (v.startswith('http://') or v.startswith('https://')):
-            raise ValueError('Website must start with http:// or https://')
         return v
 
 
@@ -64,7 +58,6 @@ class UserProfileResponse(BaseModel):
     phone: Optional[str] = None
     date_of_birth: Optional[datetime] = None
     location: Optional[str] = None
-    website: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
 

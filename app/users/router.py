@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated, Optional
 from uuid import UUID
 import math
+import os
+from datetime import datetime
 
 from app.database import get_session
 from app.users.schemas import (
@@ -225,3 +227,43 @@ async def get_user_with_profile(
         **user_response.model_dump(),
         profile=profile_response
     )
+
+
+@router.post(
+    "/{user_id}/upload-avatar",
+    response_model=UserProfileResponse,
+    summary="Upload user avatar",
+    description="Upload user profile picture"
+)
+async def upload_avatar(
+    user_id: Annotated[UUID, Depends(validate_user_access)],
+    file: UploadFile,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    """Upload user avatar"""
+    # Check file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Save file to static/img/avatars directory
+    filename = f"{user_id}_{datetime.utcnow().timestamp()}{os.path.splitext(file.filename)[1]}"
+    file_path = f"static/img/avatars/{filename}"
+    
+    # Create directory if it doesn't exist
+    os.makedirs("static/img/avatars", exist_ok=True)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+    
+    # Update user profile with avatar URL
+    profile_data = UserProfileRequest(avatar_url=f"/static/img/avatars/{filename}")
+    profile = await user_service.update_user_profile(
+        session=session,
+        user_id=user_id,
+        profile_data=profile_data,
+        current_user=current_user
+    )
+    
+    return UserProfileResponse.model_validate(profile)

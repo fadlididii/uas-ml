@@ -4,7 +4,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL = "postgresql+asyncpg://postgres:fadlipsgr123@localhost:5432/uas-ml"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:fadlipsgr123@localhost:5432/uas-ml"
     DB_HOST: str = "localhost"
     DB_PORT: str = "5432"
     DB_USER: str = "postgres"

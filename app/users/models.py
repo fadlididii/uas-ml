@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
+from sqlmodel import SQLModel, Field
 
 # Re-export User model from auth for consistency
 from app.auth.models import User, UserBase, UserCreate, UserRead, UserUpdate
@@ -19,7 +20,6 @@ class UserProfile(SQLModel, table=True):
     phone: Optional[str] = Field(default=None, max_length=20)
     date_of_birth: Optional[datetime] = Field(default=None)
     location: Optional[str] = Field(default=None, max_length=100)
-    website: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = Field(default=None)
 
@@ -32,7 +32,6 @@ class UserProfileCreate(SQLModel):
     phone: Optional[str] = None
     date_of_birth: Optional[datetime] = None
     location: Optional[str] = None
-    website: Optional[str] = None
 
 
 class UserProfileRead(SQLModel):
@@ -45,7 +44,6 @@ class UserProfileRead(SQLModel):
     phone: Optional[str] = None
     date_of_birth: Optional[datetime] = None
     location: Optional[str] = None
-    website: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
 
@@ -58,7 +56,6 @@ class UserProfileUpdate(SQLModel):
     phone: Optional[str] = None
     date_of_birth: Optional[datetime] = None
     location: Optional[str] = None
-    website: Optional[str] = None
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 

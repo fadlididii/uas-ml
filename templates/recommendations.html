@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations - HeartLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="static/css/custom/rec.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">HeartLink</div>
+        <div class="user-info">
+            <span id="userName">Loading...</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="page-title">
+            <h1>Your Matches</h1>
+            <p>Discover people who share your interests and values</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Age Range</label>
+                <select id="ageFilter">
+                    <option value="">All Ages</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="46+">46+</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Location</label>
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option value="jakarta">Jakarta</option>
+                    <option value="bandung">Bandung</option>
+                    <option value="surabaya">Surabaya</option>
+                    <option value="yogyakarta">Yogyakarta</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Interests</label>
+                <select id="interestFilter">
+                    <option value="">All Interests</option>
+                    <option value="music">Music</option>
+                    <option value="travel">Travel</option>
+                    <option value="sports">Sports</option>
+                    <option value="reading">Reading</option>
+                    <option value="cooking">Cooking</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Recommendations Grid -->
+        <div id="recommendationsContainer">
+            <div class="loading">Loading your matches...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        let currentUser = null;
+        let allRecommendations = [];
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                // Get current user info
+                const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    currentUser = await userResponse.json();
+                    document.getElementById('userName').textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+                    
+                    // Load recommendations
+                    await loadRecommendations();
+                } else {
+                    throw new Error('Failed to get user info');
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                localStorage.removeItem('access_token');
+                window.location.href = '/';
+            }
+        });
+
+        async function loadRecommendations() {
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                // For now, we'll create mock data since we don't have a matching algorithm yet
+                // In a real app, this would call an API endpoint
+                allRecommendations = generateMockRecommendations();
+                
+                displayRecommendations(allRecommendations);
+            } catch (error) {
+                console.error('Error loading recommendations:', error);
+                document.getElementById('recommendationsContainer').innerHTML = 
+                    '<div class="no-results">Error loading recommendations. Please try again.</div>';
+            }
+        }
+
+        function generateMockRecommendations() {
+            const names = [
+                { first: 'Sarah', last: 'Johnson' },
+                { first: 'Emily', last: 'Chen' },
+                { first: 'Jessica', last: 'Williams' },
+                { first: 'Amanda', last: 'Brown' },
+                { first: 'Lisa', last: 'Davis' },
+                { first: 'Michelle', last: 'Garcia' }
+            ];
+            
+            const locations = ['Jakarta', 'Bandung', 'Surabaya', 'Yogyakarta'];
+            const interests = [
+                ['Music', 'Travel', 'Photography'],
+                ['Reading', 'Cooking', 'Yoga'],
+                ['Sports', 'Movies', 'Art'],
+                ['Dancing', 'Nature', 'Writing'],
+                ['Gaming', 'Technology', 'Fitness'],
+                ['Fashion', 'Food', 'Adventure']
+            ];
+            
+            const bios = [
+                'Love exploring new places and trying different cuisines. Looking for someone to share adventures with!',
+                'Passionate about books and cozy coffee shops. Seeking meaningful conversations and genuine connections.',
+                'Fitness enthusiast who enjoys outdoor activities. Let\'s motivate each other to stay active!',
+                'Creative soul with a love for art and music. Hope to find someone who appreciates the finer things in life.',
+                'Tech professional by day, foodie by night. Always up for trying new restaurants and experiences.',
+                'Free spirit who loves traveling and meeting new people. Life is too short for boring conversations!'
+            ];
+
+            return names.map((name, index) => ({
+                id: index + 1,
+                first_name: name.first,
+                last_name: name.last,
+                age: 22 + Math.floor(Math.random() * 15),
+                location: locations[Math.floor(Math.random() * locations.length)],
+                bio: bios[index],
+                interests: interests[index],
+                compatibility_score: 75 + Math.floor(Math.random() * 25),
+                avatar: `👤` // Using emoji as placeholder
+            }));
+        }
+
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendationsContainer');
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = '<div class="no-results">No matches found. Try adjusting your filters.</div>';
+                return;
+            }
+
+            const html = `
+                <div class="recommendations-grid">
+                    ${recommendations.map(profile => `
+                        <div class="profile-card" onclick="viewProfile(${profile.id})">
+                            <div class="compatibility-score">${profile.compatibility_score}% Match</div>
+                            <div class="profile-image">${profile.avatar}</div>
+                            <div class="profile-info">
+                                <div class="profile-name">${profile.first_name} ${profile.last_name}</div>
+                                <div class="profile-age">${profile.age} years old</div>
+                                <div class="profile-location">📍 ${profile.location}</div>
+                                <div class="profile-bio">${profile.bio}</div>
+                                <div class="profile-interests">
+                                    ${profile.interests.map(interest => 
+                                        `<span class="interest-tag">${interest}</span>`
+                                    ).join('')}
+                                </div>
+                                <div class="profile-actions">
+                                    <button class="action-btn pass-btn" onclick="event.stopPropagation(); passProfile(${profile.id})">Pass</button>
+                                    <button class="action-btn like-btn" onclick="event.stopPropagation(); likeProfile(${profile.id})">Like ❤️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function viewProfile(profileId) {
+            // In a real app, this would navigate to a detailed profile view
+            console.log('Viewing profile:', profileId);
+            alert('Profile view feature coming soon!');
+        }
+
+        function likeProfile(profileId) {
+            // In a real app, this would send a like to the backend
+            console.log('Liked profile:', profileId);
+            alert('Like sent! 💕');
+        }
+
+        function passProfile(profileId) {
+            // In a real app, this would send a pass to the backend
+            console.log('Passed profile:', profileId);
+            // Remove the profile from view
+            allRecommendations = allRecommendations.filter(p => p.id !== profileId);
+            displayRecommendations(allRecommendations);
+        }
+
+        // Filter functionality
+        document.getElementById('ageFilter').addEventListener('change', applyFilters);
+        document.getElementById('locationFilter').addEventListener('change', applyFilters);
+        document.getElementById('interestFilter').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            const ageFilter = document.getElementById('ageFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+            const interestFilter = document.getElementById('interestFilter').value;
+
+            let filtered = [...allRecommendations];
+
+            if (ageFilter) {
+                const [minAge, maxAge] = ageFilter.includes('+') 
+                    ? [parseInt(ageFilter), 100] 
+                    : ageFilter.split('-').map(Number);
+                filtered = filtered.filter(p => p.age >= minAge && p.age <= maxAge);
+            }
+
+            if (locationFilter) {
+                filtered = filtered.filter(p => 
+                    p.location.toLowerCase().includes(locationFilter.toLowerCase())
+                );
+            }
+
+            if (interestFilter) {
+                filtered = filtered.filter(p => 
+                    p.interests.some(interest => 
+                        interest.toLowerCase().includes(interestFilter.toLowerCase())
+                    )
+                );
+            }
+
+            displayRecommendations(filtered);
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

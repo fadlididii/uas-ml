@@ -489,25 +489,54 @@
             }
         }
 
-        function startMatching() {
+        async function startMatching() {
             const button = document.querySelector('.start-button');
             
             // Button animation
             button.style.transform = 'scale(0.95)';
             button.innerHTML = '✨ Starting Your Journey...';
             
-            // Add loading effect
-            setTimeout(() => {
-                button.style.background = 'linear-gradient(45deg, #4ECDC4, #45B7D1)';
-                button.innerHTML = '🚀 Let\'s Go!';
-            }, 1000);
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/';
+                    return;
+                }
 
-            // Simulate navigation to preferences page
-            setTimeout(() => {
-                // Here you would navigate to the preferences page
-                // window.location.href = 'preferences.html';
-                alert('Navigating to preferences setup...');
-            }, 2000);
+                // Check preferences completion status
+                const response = await fetch('http://localhost:8000/preferences/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const status = await response.json();
+                    
+                    // Add loading effect
+                    setTimeout(() => {
+                        button.style.background = 'linear-gradient(45deg, #4ECDC4, #45B7D1)';
+                        button.innerHTML = '🚀 Let\'s Go!';
+                    }, 1000);
+
+                    // Navigate based on preferences completion
+                    setTimeout(() => {
+                        if (status.all_completed) {
+                            window.location.href = '/recommendations';
+                        } else {
+                            window.location.href = '/preferences';
+                        }
+                    }, 2000);
+                } else {
+                    throw new Error('Failed to check preferences status');
+                }
+            } catch (error) {
+                console.error('Error checking preferences:', error);
+                // Fallback to preferences page
+                setTimeout(() => {
+                    window.location.href = '/preferences';
+                }, 2000);
+            }
         }
 
         // Add interactive cursor effect

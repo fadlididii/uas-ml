@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Dating App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .edit-profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            margin-bottom: 1rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .required-field {
+            color: #dc3545;
+        }
+        .completion-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="edit-profile-container">
+            <div class="profile-header">
+                <h2><i class="fas fa-user-edit"></i> Complete Your Profile</h2>
+                <p class="text-muted">Please fill in the required fields to complete your profile</p>
+            </div>
+
+            <div class="completion-status" id="completionStatus">
+                <h6><i class="fas fa-info-circle"></i> Profile Completion Status</h6>
+                <div id="statusContent"></div>
+            </div>
+
+            <div class="alert alert-success d-none" id="successAlert">
+                <i class="fas fa-check-circle"></i> Profile updated successfully!
+            </div>
+
+            <div class="alert alert-danger d-none" id="errorAlert">
+                <i class="fas fa-exclamation-circle"></i> <span id="errorMessage"></span>
+            </div>
+
+            <form id="editProfileForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName" class="form-label">First Name <span class="required-field">*</span></label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="bio" class="form-label">Bio <span class="required-field">*</span></label>
+                    <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us about yourself..." required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                </div>
+
+                <div class="mb-4">
+                    <label for="profilePicture" class="form-label">Profile Picture <span class="required-field">*</span></label>
+                    <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/*">
+                    <div class="mt-2">
+                        <img id="imagePreview" class="profile-avatar d-none" src="" alt="Profile Preview">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Save Profile
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="skipForNow()">
+                        <i class="fas fa-arrow-right"></i> Skip for Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // Get auth headers
+        function getAuthHeaders() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return {};
+            }
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Get current user ID
+        async function getCurrentUserId() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to get user info');
+                }
+                
+                const data = await response.json();
+                return data.id;
+            } catch (error) {
+                console.error('Error getting user ID:', error);
+                window.location.href = '/login';
+                return null;
+            }
+        }
+
+        // Load user profile data
+        async function loadUserProfile() {
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) return;
+
+                // Get user data
+                const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    document.getElementById('firstName').value = userData.first_name || '';
+                    document.getElementById('lastName').value = userData.last_name || '';
+                    document.getElementById('dateOfBirth').value = userData.date_of_birth ? userData.date_of_birth.split('T')[0] : '';
+                }
+
+                // Get profile data
+                const profileResponse = await fetch(`${API_BASE_URL}/users/${userId}/profile`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (profileResponse.ok) {
+                    const profileData = await profileResponse.json();
+                    document.getElementById('bio').value = profileData.bio || '';
+                    document.getElementById('phone').value = profileData.phone || '';
+                    document.getElementById('location').value = profileData.location || '';
+                    
+                    if (profileData.avatar_url) {
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = profileData.avatar_url;
+                        preview.classList.remove('d-none');
+                    }
+                }
+
+                // Get profile status
+                const meResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (meResponse.ok) {
+                    const meData = await meResponse.json();
+                    updateCompletionStatus(meData.profile_status);
+                }
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showError('Failed to load profile data');
+            }
+        }
+
+        // Update completion status display
+        function updateCompletionStatus(profileStatus) {
+            const statusContent = document.getElementById('statusContent');
+            const isComplete = profileStatus.is_complete;
+            const missingFields = profileStatus.missing_fields;
+
+            if (isComplete) {
+                statusContent.innerHTML = `
+                    <div class="text-success">
+                        <i class="fas fa-check-circle"></i> Your profile is complete!
+                    </div>
+                `;
+            } else {
+                const fieldNames = {
+                    'first_name': 'First Name',
+                    'bio': 'Bio',
+                    'avatar_url': 'Profile Picture'
+                };
+                
+                const missingFieldsList = missingFields.map(field => fieldNames[field] || field).join(', ');
+                
+                statusContent.innerHTML = `
+                    <div class="text-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Missing required fields: ${missingFieldsList}
+                    </div>
+                `;
+            }
+        }
+
+        // Handle image preview
+        document.getElementById('profilePicture').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) return;
+
+                // Prepare profile data
+                const profileData = {
+                    first_name: document.getElementById('firstName').value,
+                    last_name: document.getElementById('lastName').value,
+                    bio: document.getElementById('bio').value,
+                    phone: document.getElementById('phone').value,
+                    location: document.getElementById('location').value,
+                    date_of_birth: document.getElementById('dateOfBirth').value || null
+                };
+
+                // Update profile
+                const profileResponse = await fetch(`${API_BASE_URL}/users/${userId}/profile`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(profileData)
+                });
+
+                if (!profileResponse.ok) {
+                    throw new Error('Failed to update profile');
+                }
+
+                // Upload profile picture if selected
+                const profilePicture = document.getElementById('profilePicture').files[0];
+                if (profilePicture) {
+                    const formData = new FormData();
+                    formData.append('file', profilePicture);
+
+                    const uploadResponse = await fetch(`${API_BASE_URL}/users/${userId}/upload-avatar`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        },
+                        body: formData
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error('Failed to upload profile picture');
+                    }
+                }
+
+                showSuccess();
+                
+                // Check if profile is now complete and redirect
+                setTimeout(async () => {
+                    const meResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (meResponse.ok) {
+                        const meData = await meResponse.json();
+                        window.location.href = meData.profile_status.redirect_to;
+                    } else {
+                        window.location.href = '/welcome';
+                    }
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showError(error.message);
+            }
+        });
+
+        // Show success message
+        function showSuccess() {
+            document.getElementById('successAlert').classList.remove('d-none');
+            document.getElementById('errorAlert').classList.add('d-none');
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.remove('d-none');
+            document.getElementById('successAlert').classList.add('d-none');
+        }
+
+        // Skip for now function
+        function skipForNow() {
+            if (confirm('Are you sure you want to skip completing your profile? You can complete it later from your profile page.')) {
+                window.location.href = '/welcome';
+            }
+        }
+
+        // Load profile data when page loads
+        document.addEventListener('DOMContentLoaded', loadUserProfile);
+    </script>
+</body>
+</html>

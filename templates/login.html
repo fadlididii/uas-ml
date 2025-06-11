@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartLink - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">HeartLink</div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="Masukkan email Anda" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password Anda" required>
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginBtn">Login</button>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
+
+        <div class="register-link">
+            <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Hide previous messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                // Show loading state
+                const originalBtnText = loginBtn.textContent;
+                loginBtn.textContent = 'Logging in...';
+                loginBtn.disabled = true;
+                
+                try {
+                    const formData = new FormData(loginForm);
+                    const loginData = {
+                        email: formData.get('email'),
+                        password: formData.get('password')
+                    };
+                    
+                    const response = await fetch('/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(loginData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        // Store token in localStorage
+                        localStorage.setItem('access_token', result.token.access_token);
+                        localStorage.setItem('user_data', JSON.stringify(result.user));
+                        
+                        // Show success message
+                        successMessage.textContent = 'Login berhasil! Memeriksa status profil...';
+                        successMessage.style.display = 'block';
+                        
+                        // Check profile completeness and redirect accordingly
+                        setTimeout(async () => {
+                            try {
+                                const meResponse = await fetch('/auth/me', {
+                                    headers: {
+                                        'Authorization': `Bearer ${result.token.access_token}`,
+                                        'Content-Type': 'application/json'
+                                    }
+                                });
+                                
+                                if (meResponse.ok) {
+                                    const meData = await meResponse.json();
+                                    const redirectTo = meData.profile_status.redirect_to;
+                                    
+                                    if (redirectTo === '/edit-profile') {
+                                        successMessage.textContent = 'Silakan lengkapi profil Anda untuk melanjutkan...';
+                                        setTimeout(() => {
+                                            window.location.href = '/edit-profile';
+                                        }, 1500);
+                                    } else {
+                                        successMessage.textContent = 'Selamat datang kembali! Mengarahkan ke dashboard...';
+                                        setTimeout(() => {
+                                            window.location.href = '/welcome';
+                                        }, 1500);
+                                    }
+                                } else {
+                                    // Fallback to profile page if status check fails
+                                    window.location.href = '/profile';
+                                }
+                            } catch (error) {
+                                console.error('Error checking profile status:', error);
+                                // Fallback to profile page
+                                window.location.href = '/profile';
+                            }
+                        }, 1000);
+                        
+                    } else {
+                        throw new Error(result.message || 'Login gagal');
+                    }
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    errorMessage.textContent = error.message || 'Terjadi kesalahan saat login';
+                    errorMessage.style.display = 'block';
+                    
+                    // Reset button
+                    loginBtn.textContent = originalBtnText;
+                    loginBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

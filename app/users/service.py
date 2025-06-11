@@ -191,6 +191,52 @@ class UserService:
             await session.refresh(profile)
         
         return profile
+    
+    async def check_profile_completeness(self, session: AsyncSession, user_id: UUID) -> dict:
+        """Check if user profile is complete"""
+        profile = await self.get_user_profile(session, user_id)
+        
+        if not profile:
+            return {
+                "is_complete": False,
+                "missing_fields": ["first_name", "bio", "avatar_url"],
+                "redirect_to": "/edit-profile"
+            }
+        
+        missing_fields = []
+        
+        # Check required fields for complete profile
+        if not profile.first_name or profile.first_name.strip() == "":
+            missing_fields.append("first_name")
+        
+        if not profile.bio or profile.bio.strip() == "":
+            missing_fields.append("bio")
+        
+        if not profile.avatar_url or profile.avatar_url.strip() == "":
+            missing_fields.append("avatar_url")
+        
+        is_complete = len(missing_fields) == 0
+        
+        return {
+            "is_complete": is_complete,
+            "missing_fields": missing_fields,
+            "redirect_to": "/welcome" if is_complete else "/edit-profile"
+        }
+    
+    async def get_user_with_profile_status(self, session: AsyncSession, user_id: UUID) -> dict:
+        """Get user with profile completeness status"""
+        user = await self.get_user_by_id(session, user_id)
+        if not user:
+            raise NotFoundError("User not found")
+        
+        profile_status = await self.check_profile_completeness(session, user_id)
+        profile = await self.get_user_profile(session, user_id)
+        
+        return {
+            "user": user,
+            "profile": profile,
+            "profile_status": profile_status
+        }
 
 
 user_service = UserService()
